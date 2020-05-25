@@ -1,0 +1,37 @@
+import subprocess,logging
+
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO,
+                            # format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                            format='%(asctime)s%(message)s',
+                            filename='/tmp/pycharm_project_705/mydumper.log',
+                            filemode='w')
+
+    # logfile = "/tmp/pycharm_project_705/log.txt"
+
+
+def executeShellCmd(cmd, ifLogCmd=True,fn=True):
+    if ifLogCmd:
+        print ("executing %s" % cmd)
+    child = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+    outData, errData = child.communicate()
+    msg = ''
+    if child.returncode == 0:
+        msg = outData
+        # logging.info("  dir count:"+outData)
+    else:
+        msg = errData
+    if ifLogCmd and outData:
+        logging.info(outData)
+
+    if fn:
+        return {'errorcode': child.returncode, 'errormsg': errData, 'outmsg': outData, 'msg': msg}
+    else:
+        return msg
+
+
+dircount= executeShellCmd('ls -l /home/dbMon|grep "^d"| wc -l',ifLogCmd=True,fn=False)
+
+print dircount
